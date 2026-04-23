@@ -17,7 +17,6 @@ typedef struct{
 	int *less;
 	int *same;
 	int *more;
-
 	size_t less_size;
 	size_t same_size;
 	size_t more_size;
@@ -29,7 +28,6 @@ typedef struct{
 	int *data;
 	size_t size;
 	int *result;
-
 	int threads;
 
 } ThreadData;
@@ -40,8 +38,8 @@ Partition partition(int pivot, int *data, size_t size){
 	p.less = malloc(size * sizeof(int));
 	p.same = malloc(size * sizeof(int));
 	p.more = malloc(size * sizeof(int));
-
 	p.less_size = p.same_size = p.more_size = 0;
+
 	for (size_t i= 0; i <size; i++){
 		if (data[i]<pivot)
 			p.less[p.less_size++] = data[i];
@@ -78,7 +76,6 @@ int *quicksort(size_t size, int *data){
 	free(left);
 	free(right);
 	free(p.less);
-
 	free(p.same);
 	free(p.more);
 
@@ -91,7 +88,7 @@ void *quicksort_threaded(void *args){
 	ThreadData *t = (ThreadData *)args;
 	if (t->size<= 1){
 		t->result = malloc(t->size * sizeof(int));
-		for (size_t i =0; i< t->size; i++){
+		for (size_t i = 0; i< t->size; i++){
 			t->result[i] = t->data[i];
 		}
 		return NULL;
@@ -102,18 +99,20 @@ void *quicksort_threaded(void *args){
 	ThreadData left = { p.less, p.less_size,NULL, 0};
 	ThreadData right = { p.more, p.more_size,NULL, 0};
 
-	t->threads +=2;
+	t->threads += 2;
 	pthread_create(&left_thread, NULL,quicksort_threaded, &left);
 	pthread_create(&right_thread, NULL,quicksort_threaded, &right);
 	pthread_join(left_thread,NULL);
 	pthread_join(right_thread, NULL);
-
 	t->result = malloc(t->size * sizeof(int));
-	size_t idx=0;
+	size_t idx = 0;
+
 	memcpy(t->result+idx,left.result, left.size * sizeof(int));
 	idx += left.size;
+
 	memcpy(t->result +idx,p.same,p.same_size * sizeof(int));
 	idx += p.same_size;
+
 	memcpy(t->result+idx, right.result, right.size * sizeof(int));
 
 	free(left.result);
@@ -127,8 +126,10 @@ void *quicksort_threaded(void *args){
 
 
 int main(int argc, char **argv){
+
 	int print_flag = 0;
 	char *filename;
+
 	if (argc == 2){
 		filename = argv[1];
 	} 
@@ -140,48 +141,32 @@ int main(int argc, char **argv){
 		fprintf(stderr, "Usage: %s [-p] file\n", argv[0]);
 		return 1;
 	}
-
-
 	FILE *fp = fopen(filename, "r");
+
 	if (!fp){
 		perror("fopen");
 		return 1;
 	}
-
-
-
 	int capacity = 100;
 	int size = 0;
-
-
-
 	int *data = malloc(capacity * sizeof(int));
-
 
 	while (fscanf(fp, "%d", &data[size]) == 1){
 		size++;
-
 		if (size >= capacity){
-
-
 			capacity *= 2;
 			data = realloc(data, capacity * sizeof(int));
-
 		}
 	}
 
-
 	fclose(fp);
 	if (print_flag){
-
 		printf("Unsorted list: ");
-
 		for (int i = 0; i < size; i++){
 
 			printf("%d", data[i]);
 			if (i != size - 1) printf(", ");
 		}
-
 		printf("\n");
 	}
 
@@ -189,47 +174,35 @@ int main(int argc, char **argv){
 	int *sorted1 = quicksort(size, data);
 	clock_t end = clock();
 	double t1 = (double)(end - start) / CLOCKS_PER_SEC;
-
-
 	printf("Non-threaded time: %f\n", t1);
-	if (print_flag){
 
+	if (print_flag){
 		printf("Resulting list: ");
 		for (int i = 0; i < size; i++){
 			printf("%d", sorted1[i]);
-
 			if (i != size - 1) printf(", ");
 		}
-
 		printf("\n");
 	}
 
-
 	ThreadData t;
 	t.data = data;
-
 	t.size = size;
 	t.result = NULL;
 	t.threads = 0;
-
 	start = clock();
-
 	pthread_t thread;
 	pthread_create(&thread, NULL, quicksort_threaded, &t);
 	pthread_join(thread, NULL);
-
 	end = clock();
 	double t2 = (double)(end - start) / CLOCKS_PER_SEC;
 	printf("Threaded time: %f\n", t2);
-
 	printf("Threads spawned: %d\n", t.threads);
 
 	if (print_flag){
 
 		printf("Resulting list: ");
-
 		for (int i = 0; i < size; i++){
-
 			printf("%d", t.result[i]);
 			if (i != size - 1) printf(", ");
 		}
@@ -237,7 +210,7 @@ int main(int argc, char **argv){
 	}
 	free(data);
 	free(sorted1);
-
 	free(t.result);
 	return 0;
+
 }
