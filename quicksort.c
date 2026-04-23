@@ -13,6 +13,7 @@
 #include <pthread.h>
 
 typedef struct{
+
 	int *less;
 	int *same;
 	int *more;
@@ -23,6 +24,15 @@ typedef struct{
 
 } Partition;
 
+typedef struct{
+
+	int *data;
+	size_t size;
+	int *result;
+
+	int threads;
+
+} ThreadData;
 
 Partition partition(int pivot, const int *data, size_t size){
 
@@ -76,4 +86,40 @@ int *quicksort(size_t size, const int *data){
 
 }
 
+void *quicksort_threaded(void *args){
+
+	ThreadData *t = (ThreadData *)args;
+	if (t->size<= 1){
+		t->result = malloc(t->size * sizeof(int));
+		for (size_t i =0; i< t->size; i++)
+			t->result[i] = t->data[i];
+		return NULL;
+	}
+	int pivot = t->data[0];
+	Partition p = partition(pivot, t->data, t->size);
+	pthread_t left_thread, right_thread;
+	ThreadData left = { p.less, p.less_size,NULL, 0};
+	ThreadData right = { p.more, p.more_size,NULL, 0};
+
+	t->threads +=2;
+	pthread_create(&left_thread, NULL,quicksort_threaded, &left);
+	pthread_create(&right_thread, NULL,quicksort_threaded, &right);
+	pthread_join(left_thread,NULL);
+	pthread_join(right_thread, NULL);
+
+	t->result = malloc(t->size * sizeof(int));
+	size_t idx=0;
+	memcpy(t->result+idx,left.result, left.size * sizeof(int));
+	idx += left.size;
+	memcpy(t->result +idx,p.same,p.same_size * sizeof(int));
+	idx += p.same_size;
+	memcpy(t->result+idx, right.result, right.size * sizeof(int));
+
+	free(left.result);
+	free(right.result);
+	free(p.less);
+	free(p.same);
+	free(p.more);
+	return NULL;
+}
 
