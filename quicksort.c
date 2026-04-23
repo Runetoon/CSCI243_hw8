@@ -34,7 +34,7 @@ typedef struct{
 
 } ThreadData;
 
-Partition partition(int pivot, const int *data, size_t size){
+Partition partition(int pivot, int *data, size_t size){
 
 	Partition p;
 	p.less = malloc(size * sizeof(int));
@@ -53,7 +53,7 @@ Partition partition(int pivot, const int *data, size_t size){
 	return p;
 }
 
-int *quicksort(size_t size, const int *data){
+int *quicksort(size_t size, int *data){
 
 	if (size<= 1){
 		int *base = malloc(size * sizeof(int));
@@ -91,8 +91,9 @@ void *quicksort_threaded(void *args){
 	ThreadData *t = (ThreadData *)args;
 	if (t->size<= 1){
 		t->result = malloc(t->size * sizeof(int));
-		for (size_t i =0; i< t->size; i++)
+		for (size_t i =0; i< t->size; i++){
 			t->result[i] = t->data[i];
+		}
 		return NULL;
 	}
 	int pivot = t->data[0];
@@ -123,3 +124,120 @@ void *quicksort_threaded(void *args){
 	return NULL;
 }
 
+
+
+int main(int argc, char **argv){
+	int print_flag = 0;
+	char *filename;
+	if (argc == 2){
+		filename = argv[1];
+	} 
+	else if (argc == 3 && strcmp(argv[1], "-p") == 0){
+		print_flag = 1;
+		filename = argv[2];
+	} 
+	else{
+		fprintf(stderr, "Usage: %s [-p] file\n", argv[0]);
+		return 1;
+	}
+
+
+	FILE *fp = fopen(filename, "r");
+	if (!fp){
+		perror("fopen");
+		return 1;
+	}
+
+
+
+	int capacity = 100;
+	int size = 0;
+
+
+
+	int *data = malloc(capacity * sizeof(int));
+
+
+	while (fscanf(fp, "%d", &data[size]) == 1){
+		size++;
+
+		if (size >= capacity){
+
+
+			capacity *= 2;
+			data = realloc(data, capacity * sizeof(int));
+
+		}
+	}
+
+
+	fclose(fp);
+	if (print_flag){
+
+		printf("Unsorted list: ");
+
+		for (int i = 0; i < size; i++){
+
+			printf("%d", data[i]);
+			if (i != size - 1) printf(", ");
+		}
+
+		printf("\n");
+	}
+
+	clock_t start = clock();
+	int *sorted1 = quicksort(size, data);
+	clock_t end = clock();
+	double t1 = (double)(end - start) / CLOCKS_PER_SEC;
+
+
+	printf("Non-threaded time: %f\n", t1);
+	if (print_flag){
+
+		printf("Resulting list: ");
+		for (int i = 0; i < size; i++){
+			printf("%d", sorted1[i]);
+
+			if (i != size - 1) printf(", ");
+		}
+
+		printf("\n");
+	}
+
+
+	ThreadData t;
+	t.data = data;
+
+	t.size = size;
+	t.result = NULL;
+	t.threads = 0;
+
+	start = clock();
+
+	pthread_t thread;
+	pthread_create(&thread, NULL, quicksort_threaded, &t);
+	pthread_join(thread, NULL);
+
+	end = clock();
+	double t2 = (double)(end - start) / CLOCKS_PER_SEC;
+	printf("Threaded time: %f\n", t2);
+
+	printf("Threads spawned: %d\n", t.threads);
+
+	if (print_flag){
+
+		printf("Resulting list: ");
+
+		for (int i = 0; i < size; i++){
+
+			printf("%d", t.result[i]);
+			if (i != size - 1) printf(", ");
+		}
+		printf("\n");
+	}
+	free(data);
+	free(sorted1);
+
+	free(t.result);
+	return 0;
+}
