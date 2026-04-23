@@ -161,7 +161,7 @@ int main(int argc, char **argv){
 
 	fclose(fp);
 	if (print_flag){
-		printf("Unsorted list: ");
+		printf("Unsorted list before non-threaded quicksort: ");
 		for (int i = 0; i < size; i++){
 
 			printf("%d", data[i]);
@@ -180,6 +180,16 @@ int main(int argc, char **argv){
 		printf("Resulting list: ");
 		for (int i = 0; i < size; i++){
 			printf("%d", sorted1[i]);
+			if (i != size - 1) printf(", ");
+		}
+		printf("\n");
+	}
+
+	if (print_flag){
+		printf("Unsorted list before threaded quicksort: ");
+		for (int i = 0; i < size; i++){
+
+			printf("%d", data[i]);
 			if (i != size - 1) printf(", ");
 		}
 		printf("\n");
