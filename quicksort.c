@@ -32,6 +32,13 @@ typedef struct{
 
 } ThreadData;
 
+/*
+ * This function partitions the data when necessary, it does so based on the standard rules of quicksort. Should only be used by sorting functions.
+ * @param pivot, the pivot value
+ * @param *data, the data thats being partitioned
+ * @param size, the size of the int array thats being partitioned
+ * @returns, the Partitioned data set
+ */
 Partition partition(int pivot, int *data, size_t size){
 
 	Partition p;
@@ -51,6 +58,12 @@ Partition partition(int pivot, int *data, size_t size){
 	return p;
 }
 
+/*
+ * This is the recursive function that uses the quicksort algorithm
+ * @param *data, the data thats being sorted
+ * @param size, the size of the int array thats being sorted
+ * @returns, the sorted data set
+ */
 int *quicksort(size_t size, int *data){
 
 	if (size<= 1){
@@ -83,6 +96,10 @@ int *quicksort(size_t size, int *data){
 
 }
 
+/*
+ * This is the threaded function that uses the quicksort algorithm.
+ * @param *args, the argument that contains a struct with all the values quicksort needs to run,. This includes the data, amd size of the data.
+ */
 void *quicksort_threaded(void *args){
 
 	ThreadData *t = (ThreadData *)args;
@@ -138,7 +155,7 @@ int main(int argc, char **argv){
 		filename = argv[2];
 	} 
 	else{
-		fprintf(stderr, "Usage: %s [-p] file\n", argv[0]);
+		fprintf(stderr, "Usage: %s [-p] file_of_integers\n", argv[0]);
 		return 1;
 	}
 	FILE *fp = fopen(filename, "r");
