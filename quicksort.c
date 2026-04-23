@@ -155,7 +155,7 @@ int main(int argc, char **argv){
 		filename = argv[2];
 	} 
 	else{
-		fprintf(stderr, "Usage: %s [-p] file_of_integers\n", argv[0]);
+		fprintf(stderr, "usage: %s [-p] file_of_integers\n", argv[0]);
 		return 1;
 	}
 	FILE *fp = fopen(filename, "r");

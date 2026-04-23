@@ -1,0 +1,41 @@
+commit 771d81455f01f30f34823968b7865fb20c16b776
+Author: sfr8408 <sam3.rizzico@icloud.com>
+Date:   Wed Apr 22 22:53:54 2026 -0400
+
+    more formatting, and minor fixes
+
+commit 816f0348ac9ffa5fd8c529009bdc70c3d1d200fa
+Author: sfr8408 <sam3.rizzico@icloud.com>
+Date:   Wed Apr 22 22:45:32 2026 -0400
+
+    gradescope commit
+
+commit e4a89c13fb271be3ac2d0edb42cbda69acd20586
+Author: sfr8408 <sam3.rizzico@icloud.com>
+Date:   Wed Apr 22 22:40:49 2026 -0400
+
+    formatting
+
+commit 94bce2f79e623a33849a2e8e2555b0b726d0e3f7
+Author: sfr8408 <sam3.rizzico@icloud.com>
+Date:   Wed Apr 22 22:38:40 2026 -0400
+
+    made main function
+
+commit 37524af77c132a44be899c2923cd0d7dc205c929
+Author: sfr8408 <sam3.rizzico@icloud.com>
+Date:   Wed Apr 22 22:06:57 2026 -0400
+
+    made quicksort threaded inner function
+
+commit cfbc16d3def9ad1a55b3b0d8c0bdcb0d76957a47
+Author: sfr8408 <sam3.rizzico@icloud.com>
+Date:   Wed Apr 22 21:28:57 2026 -0400
+
+    made original quicksort
+
+commit 421e7e2bc8be2897ac3dcb591d51ba120bad9ae9
+Author: sfr8408 <sam3.rizzico@icloud.com>
+Date:   Wed Apr 22 19:40:21 2026 -0400
+
+    iitial commit
